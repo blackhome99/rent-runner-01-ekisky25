@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RENT RUNNER — Your agent covers your rent, one bounty at a time</title>
+<link rel="stylesheet" href="./src/style.css">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.min.js" } }
+</script>
+<script src="./vendor/three.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <canvas id="game-canvas"></canvas>
+
+  <!-- ============ HUD ============ -->
+  <div id="hud" class="hidden">
+    <div id="hud-top-left">
+      <div id="cash-box"><span id="cash-label">CASH</span><span id="cash-value">$0</span></div>
+      <div id="rent-box"><span id="rent-label">RENT DUE</span><span id="rent-value">$450</span><span id="rent-clock">06:00</span></div>
+      <div id="wanted-box" title="Wanted level"><span class="wanted-label">WANTED</span><span id="wanted-stars"></span></div>
+    </div>
+    <div id="hud-top-right">
+      <div id="radio-box"><span id="radio-name">RADIO HARBOR 97.4</span><span id="radio-track">Neon Tide — Sunset Run</span></div>
+      <div id="clock-box"><span id="day-label">DAY 1</span><span id="time-label">17:00</span><span id="district-label">DERMAGA BARAT</span></div>
+    </div>
+    <div id="hud-bottom-left">
+      <canvas id="minimap" width="220" height="220"></canvas>
+      <div id="compass"><span id="compass-n">N</span><span id="compass-needle">▲</span><span id="compass-deg">0°</span></div>
+    </div>
+    <div id="hud-bottom-right">
+      <div id="weapon-box"><span id="weapon-name">AK-47</span><span id="ammo-value">30 / 120</span></div>
+      <div id="health-box"><span id="health-label">HEALTH</span><div id="health-bar"><div id="health-fill"></div></div></div>
+      <div id="speed-box"><span id="speed-value">0</span><span id="speed-unit">MPH</span></div>
+    </div>
+    <div id="police-panel" class="hidden">
+      <div class="police-title">⚠ CITY MODERATORS — POLICE RESPONSE</div>
+      <div id="police-status">Patrols searching the harbor district…</div>
+      <div id="police-units">Units responding: <span id="police-count">0</span></div>
+    </div>
+    <div id="mission-panel">
+      <div id="mission-title">JOB 1/8 — FIRST DELIVERY</div>
+      <div id="mission-stage-bar"><div id="mission-stage-fill"></div></div>
+      <div id="mission-objective">Pick up the parcel at Dock 7.</div>
+    </div>
+    <div id="hint-bar">WASD move · SHIFT sprint · E enter/exit car · F shoot · R reload · M radio · TAB job board · H hide</div>
+    <div id="crosshair" class="hidden">+</div>
+    <div id="toast"></div>
+    <div id="damage-vignette"></div>
+  </div>
+
+  <!-- ============ START MENU ============ -->
+  <div id="menu">
+    <div class="menu-sky"></div>
+    <div class="menu-inner">
+      <div class="menu-kicker">RENT HARBOR · NEON PORT CITY</div>
+      <h1 class="game-logo">RENT<span>RUNNER</span></h1>
+      <p class="tagline">Your agent covers your rent — one bounty at a time.</p>
+      <p class="menu-story">Dimas is a courier-agent in Rent Harbor. Every day the rent clock ticks down.
+        Take bounties, earn cash, pay the rent — or get evicted. The City Moderators are always watching.</p>
+      <div class="menu-buttons">
+        <button id="btn-new" class="menu-btn primary">▶ NEW GAME</button>
+        <button id="btn-continue" class="menu-btn">CONTINUE — DAY <span id="continue-day">1</span></button>
+        <button id="btn-how" class="menu-btn">HOW TO PLAY</button>
+      </div>
+      <div id="save-slots">
+        <div class="slot-card" data-slot="1"><div class="slot-title">SLOT 1</div><div class="slot-info">Empty</div></div>
+        <div class="slot-card" data-slot="2"><div class="slot-title">SLOT 2</div><div class="slot-info">Empty</div></div>
+        <div class="slot-card" data-slot="3"><div class="slot-title">SLOT 3</div><div class="slot-info">Empty</div></div>
+      </div>
+      <div id="howto" class="hidden">
+        <b>CONTROLS</b> — WASD move / drive · Mouse look · SHIFT sprint · SPACE jump · E enter or steal a car ·
+        F or click shoot · R reload · C change camera · M radio station · TAB job board · P pause · H hide HUD.<br>
+        <b>THE LOOP</b> — Open the job board (TAB), take a bounty, finish it for cash, and pay your daily rent
+        before the clock hits zero. Crimes raise wanted stars: at 3+ the Moderators set roadblocks, at 4+ the
+        helicopter joins. Break line of sight to cool off. Sleep at the safehouse to save and start a new day.
+      </div>
+      <div class="menu-foot">An original game. No real city, person or brand is depicted. · v1.0</div>
+    </div>
+  </div>
+
+  <!-- ============ DIALOGUE / JOB BOARD / SHOP / PAUSE ============ -->
+  <div id="dialogue" class="hidden">
+    <div class="dlg-speaker" id="dlg-speaker">MARA — DISPATCHER</div>
+    <div class="dlg-text" id="dlg-text"></div>
+    <button id="dlg-next" class="menu-btn primary">CONTINUE ▸</button>
+  </div>
+
+  <div id="jobboard" class="hidden panel">
+    <h2>JOB BOARD — RENT HARBOR BOUNTIES</h2>
+    <div id="job-list"></div>
+    <button id="job-close" class="menu-btn">CLOSE [TAB]</button>
+  </div>
+
+  <div id="shop" class="hidden panel">
+    <h2 id="shop-title">CORNER SHOP</h2>
+    <div id="shop-list"></div>
+    <button id="shop-close" class="menu-btn">LEAVE SHOP</button>
+  </div>
+
+  <div id="pause" class="hidden panel">
+    <h2>PAUSED</h2>
+    <div class="pause-row"><button id="pause-resume" class="menu-btn primary">RESUME</button></div>
+    <div class="pause-row"><button id="pause-save" class="menu-btn">SAVE GAME</button>
+    <button id="pause-quit" class="menu-btn">QUIT TO MENU</button></div>
+    <div id="pause-note">Progress saves to the selected slot.</div>
+  </div>
+
+  <div id="gameover" class="hidden panel">
+    <h2 id="go-title">BUSTED</h2>
+    <p id="go-text"></p>
+    <button id="go-respawn" class="menu-btn primary">RESPAWN AT SAFEHOUSE</button>
+  </div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+/* RENT RUNNER — HUD, menu and panel styling. Sunset / neon grading. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #12081f; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif; color: #f5efff; }
+#app { position: relative; width: 100%; height: 100%; }
+#game-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hidden { display: none !important; }
+
+/* ---------- HUD ---------- */
+#hud { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+#hud-top-left { position: absolute; top: 14px; left: 16px; display: flex; flex-direction: column; gap: 6px; }
+#cash-box, #rent-box { background: rgba(10, 6, 24, 0.72); border: 1px solid rgba(255, 190, 80, 0.55);
+  border-left: 4px solid #ffb84d; border-radius: 6px; padding: 6px 12px; font-weight: 800; letter-spacing: 1px; }
+#cash-label, #rent-label { font-size: 11px; color: #ffb84d; margin-right: 8px; }
+#cash-value { font-size: 22px; color: #7dff9a; text-shadow: 0 0 12px rgba(125,255,154,.6); }
+#rent-value { font-size: 18px; color: #fff; }
+#rent-clock { font-size: 18px; color: #ff5d7a; margin-left: 10px; font-variant-numeric: tabular-nums; }
+#rent-box.urgent { animation: pulse 0.8s infinite; border-color: #ff5d7a; }
+@keyframes pulse { 50% { background: rgba(120, 10, 30, 0.85); } }
+#wanted-box { display: flex; align-items: center; gap: 10px; width: fit-content;
+  background: rgba(10, 6, 24, 0.78); border: 1px solid rgba(255, 210, 63, 0.55);
+  border-left: 4px solid #ffd23f; border-radius: 6px; padding: 6px 12px;
+  font-size: 26px; letter-spacing: 4px; color: #ffd23f; text-shadow: 0 0 10px rgba(255,210,63,.8); min-height: 30px; }
+#wanted-box .dim { color: rgba(255,255,255,0.45); text-shadow: none; }
+.wanted-label { font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #ffd23f; text-shadow: none; }
+
+#hud-top-right { position: absolute; top: 14px; right: 16px; text-align: right; display: flex; flex-direction: column; gap: 6px; }
+#radio-box { background: rgba(10,6,24,.72); border: 1px solid rgba(0,229,255,.5); border-radius: 6px; padding: 6px 12px; }
+#radio-name { color: #00e5ff; font-weight: 800; font-size: 13px; letter-spacing: 1px; }
+#radio-track { display: block; font-size: 12px; color: #cfe9ff; margin-top: 2px; }
+#clock-box { background: rgba(10,6,24,.72); border: 1px solid rgba(255,255,255,.25); border-radius: 6px; padding: 6px 12px; font-weight: 700; }
+#day-label { color: #ffb84d; margin-right: 8px; }
+#time-label { color: #fff; margin-right: 8px; }
+#district-label { color: #9fd8ff; font-size: 12px; letter-spacing: 1px; }
+
+#hud-bottom-left { position: absolute; left: 16px; bottom: 16px; }
+#minimap { border: 2px solid rgba(255,255,255,.55); border-radius: 50%; background: #0a1420;
+  box-shadow: 0 0 18px rgba(0,0,0,.7), 0 0 0 4px rgba(10,6,24,.5); }
+#compass { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); width: 220px; text-align: center; }
+#compass-n { color: #fff; font-weight: 900; font-size: 18px; text-shadow: 0 0 6px #000, 0 0 2px #000; }
+#compass-needle { color: #ff3b30; font-size: 16px; margin-left: 4px; text-shadow: 0 0 6px #000; }
+#compass-deg { color: #cfe9ff; font-size: 12px; margin-left: 6px; text-shadow: 0 0 6px #000; }
+
+#hud-bottom-right { position: absolute; right: 16px; bottom: 16px; text-align: right; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+#weapon-box { background: rgba(10,6,24,.72); border: 1px solid rgba(255,255,255,.3); border-radius: 6px; padding: 6px 12px; font-weight: 800; }
+#weapon-name { color: #ffb84d; margin-right: 10px; letter-spacing: 1px; }
+#ammo-value { color: #fff; font-variant-numeric: tabular-nums; }
+#health-box { display: flex; align-items: center; gap: 8px; background: rgba(10,6,24,.72); border-radius: 6px; padding: 6px 12px; }
+#health-label { font-size: 11px; font-weight: 800; letter-spacing: 1px; color: #ff8fa3; }
+#health-bar { width: 130px; height: 12px; background: rgba(255,255,255,.15); border-radius: 6px; overflow: hidden; }
+#health-fill { height: 100%; width: 100%; background: linear-gradient(90deg, #ff3b30, #ff7a45); transition: width .2s; }
+#speed-box { font-weight: 900; font-size: 30px; color: #fff; text-shadow: 0 2px 8px #000; }
+#speed-unit { font-size: 13px; color: #cfe9ff; margin-left: 4px; }
+
+#police-panel { position: absolute; top: 154px; left: 16px; width: 320px; background: rgba(40, 4, 12, 0.82);
+  border: 1px solid #ff3b30; border-left: 5px solid #ff3b30; border-radius: 6px; padding: 10px 12px; }
+.police-title { color: #ff6b7a; font-weight: 900; font-size: 13px; letter-spacing: 1px; }
+#police-status, #police-units { font-size: 13px; color: #ffe9ec; margin-top: 4px; }
+
+#mission-panel { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 420px;
+  background: rgba(10,6,24,.72); border: 1px solid rgba(0,229,255,.45); border-radius: 6px; padding: 8px 14px; text-align: center; }
+#mission-title { font-weight: 900; color: #00e5ff; letter-spacing: 1px; font-size: 14px; }
+#mission-stage-bar { height: 8px; background: rgba(255,255,255,.15); border-radius: 4px; margin: 6px 0; overflow: hidden; }
+#mission-stage-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #00e5ff, #7dff9a); transition: width .3s; }
+#mission-objective { font-size: 13px; color: #eaf6ff; }
+
+#hint-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 12px;
+  color: rgba(255,255,255,.75); text-shadow: 0 1px 4px #000; white-space: nowrap; }
+#crosshair { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); font-size: 28px;
+  color: #fff; text-shadow: 0 0 6px #000; font-weight: 100; }
+#toast { position: absolute; top: 38%; left: 50%; transform: translateX(-50%); font-size: 22px; font-weight: 900;
+  color: #7dff9a; text-shadow: 0 2px 10px #000; text-align: center; }
+#damage-vignette { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 90px 30px rgba(255,0,40,0);
+  transition: box-shadow .15s; }
+
+/* ---------- MENU ---------- */
+#menu { position: absolute; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, rgba(30,8,52,.25) 0%, rgba(10,4,20,.55) 55%, rgba(10,4,20,.92) 100%); }
+.menu-sky { position: absolute; inset: 0; background:
+  radial-gradient(ellipse 90% 45% at 50% 108%, rgba(255,120,60,.55), transparent 60%),
+  radial-gradient(ellipse 60% 35% at 78% 100%, rgba(255,60,140,.4), transparent 60%),
+  linear-gradient(180deg, #2b1055 0%, #7b2d8b 45%, #ff7e47 78%, #ffb84d 100%); z-index: -1; }
+.menu-inner { text-align: center; max-width: 760px; padding: 20px; }
+.menu-kicker { letter-spacing: 6px; font-size: 13px; font-weight: 800; color: #ffe9a8; text-shadow: 0 2px 8px #000; }
+.game-logo { font-size: 84px; line-height: 0.95; font-weight: 900; letter-spacing: 2px; color: #fff;
+  text-shadow: 0 0 24px rgba(255,120,220,.8), 0 4px 0 #c2185b, 0 8px 24px #000; margin: 10px 0 4px; }
+.game-logo span { display: block; font-size: 84px; color: #00e5ff; text-shadow: 0 0 24px rgba(0,229,255,.8), 0 4px 0 #005f73, 0 8px 24px #000; }
+.tagline { font-size: 19px; font-weight: 700; color: #ffe9a8; text-shadow: 0 2px 6px #000; }
+.menu-story { margin: 14px auto 18px; max-width: 620px; font-size: 15px; line-height: 1.5; color: #f0e6ff; text-shadow: 0 1px 4px #000; }
+.menu-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.menu-btn { pointer-events: auto; cursor: pointer; border: 1px solid rgba(255,255,255,.5); background: rgba(16,8,32,.8);
+  color: #fff; font-weight: 800; letter-spacing: 1px; font-size: 14px; padding: 12px 22px; border-radius: 8px; }
+.menu-btn:hover { background: rgba(60,20,90,.9); border-color: #00e5ff; }
+.menu-btn.primary { background: linear-gradient(90deg, #ff2d78, #ff7e47); border-color: transparent; }
+.menu-btn.primary:hover { filter: brightness(1.15); }
+#save-slots { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
+.slot-card { width: 170px; background: rgba(10,6,24,.75); border: 1px solid rgba(255,255,255,.3); border-radius: 8px;
+  padding: 10px; cursor: pointer; text-align: left; }
+.slot-card.selected { border-color: #00e5ff; box-shadow: 0 0 12px rgba(0,229,255,.5); }
+.slot-title { font-weight: 900; color: #00e5ff; font-size: 13px; letter-spacing: 1px; }
+.slot-info { font-size: 12px; color: #d8ccff; margin-top: 4px; line-height: 1.4; }
+#howto { margin: 16px auto 0; max-width: 640px; text-align: left; font-size: 13.5px; line-height: 1.6;
+  background: rgba(10,6,24,.8); border: 1px solid rgba(255,255,255,.25); border-radius: 8px; padding: 14px 16px; }
+.menu-foot { margin-top: 16px; font-size: 12px; color: rgba(255,255,255,.6); }
+
+/* ---------- PANELS ---------- */
+.panel { position: absolute; z-index: 8; left: 50%; top: 50%; transform: translate(-50%,-50%);
+  width: min(620px, 92vw); background: rgba(12,7,28,.94); border: 1px solid rgba(0,229,255,.5); border-radius: 10px; padding: 20px; }
+.panel h2 { color: #00e5ff; letter-spacing: 1px; margin-bottom: 12px; font-size: 20px; }
+#dialogue { position: absolute; z-index: 8; left: 50%; bottom: 90px; transform: translateX(-50%); width: min(680px, 92vw);
+  background: rgba(12,7,28,.94); border: 1px solid rgba(255,184,77,.6); border-radius: 10px; padding: 16px 18px; }
+.dlg-speaker { color: #ffb84d; font-weight: 900; letter-spacing: 1px; font-size: 13px; }
+.dlg-text { font-size: 16px; line-height: 1.55; margin: 8px 0 12px; color: #fff; }
+.job-row, .shop-row { display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }
+.job-row b, .shop-row b { color: #ffe9a8; }
+.job-row .pay, .shop-row .pay { color: #7dff9a; font-weight: 900; white-space: nowrap; }
+.job-row p, .shop-row p { font-size: 13px; color: #d8ccff; margin-top: 3px; }
+.job-row .take, .shop-row .buy { pointer-events: auto; cursor: pointer; border: none; background: #00b8a9; color: #fff;
+  font-weight: 800; padding: 8px 14px; border-radius: 6px; white-space: nowrap; }
+.job-row .take:disabled, .shop-row .buy:disabled { opacity: .4; cursor: default; }
+.pause-row { display: flex; gap: 10px; margin-bottom: 10px; }
+#pause-note { font-size: 13px; color: #b9a8e0; }
+#go-title { color: #ff3b30; font-size: 34px; }
+#go-text { font-size: 15px; line-height: 1.5; margin-bottom: 14px; color: #ffe9ec; }
+@media (max-width: 900px) { .game-logo, .game-logo span { font-size: 56px; } #mission-panel { width: 320px; } }
